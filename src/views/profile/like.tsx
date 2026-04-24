@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-const LikeViewComponent: React.FC = () => {
+const LiveView: React.FC = () => {
     const navigation = useNavigate()
     return (
         <div className="catalog content">
@@ -61,4 +61,4 @@ const LikeViewComponent: React.FC = () => {
     );
 };
 
-export default LikeViewComponent;
+export default LiveView;
