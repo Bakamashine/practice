@@ -1,8 +1,33 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import product, { ProductResponse, ProductResponseAny } from "../api/product";
+import Loader, { LoaderOverlay } from "../components/Loader";
+import default_image_url from "../constants/image";
 
 export function MainPage() {
+  const [myproduct, setProduct] = useState<ProductResponseAny>();
+  const [load, setLoad] = useState(true);
 
-    const navigation = useNavigate()
+  const navigation = useNavigate();
+
+  const getData = async () => {
+    try {
+      const result = await product.getAll();
+      if (result) setProduct(result);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoad(false);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  if (load) {
+    return <LoaderOverlay />;
+  }
   return (
     //   <!-- каталог -->
     <div className="catalog content">
@@ -10,49 +35,51 @@ export function MainPage() {
         <h1>Услуги и товары</h1>
         <div className="row row-cols-1 row-cols-2 row-cols-sm-2 row-cols-md-3 g-4 my-3">
           {/* <!-- основная карточка --> */}
-          <div className="col d-flex">
-            <div className="rounded shadow p-3 w-100">
-              <img src="img/Group 19.png" className="card-img-top" alt="..." />
-              <div className="card-body catalog">
-                <h3 className="card-title">Крутое название</h3>
-                <h5>Исполнитель</h5>
-                <h4>Цена</h4>
-                <p>
-                  Крутое инфо Lorem ipsum dolor sit amet consectetur adipisicing
-                  elit. Expedita?
-                </p>
-              </div>
-              <div className="d-flex align-items-center ">
-                 <button
-                    type="button"
-                    className="   sign-out d-flex myLightBlue border-0 rounded-3 justify-content-center align-items-center  p-2 text-white w-100"
-                    onClick={e => navigation("/show ")}
-                  >
-                    <span>подробнее</span>
-                  </button>
-                {/* <Link to="/show" className="w-100 mx-1 text-decoration-none">
-                  <button
-                    type="button"
-                    className="   sign-out d-flex myLightBlue border-0 rounded-3 justify-content-center align-items-center  p-2 text-white w-100"
-                    // onClick={e => navigation("/show ")}
-                  >
-                    <span>подробнее</span>
-                  </button>
-                </Link> */}
 
-                <form action="" className="m-0 p-0 d-inline-block lh-1">
-                  <button
-                    type="button"
-                    className="border-0 bg-transparent p-0 "
-                  >
-                    <img src="img/greyHear.png" alt="" className="like" />
-                    {/* <!-- если активна --> */}
-                    {/* <!--<img src="img/redHear.png" alt="" className="like"> --> */}
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
+          {myproduct?.products && myproduct.products.length > 0 ? (
+            <>
+              {myproduct.products.map((item) => (
+                <div className="col d-flex" key={item.id}>
+                  <div className="rounded shadow p-3 w-100">
+                    <img
+                      src={item.photoUrl || default_image_url}
+                      className="card-img-top"
+                      alt="..."
+                    />
+                    <div className="card-body catalog">
+                      <h3 className="card-title">{item.productName}</h3>
+                      {/* <h5>Исполнитель</h5> */}
+                      <h4>Цена {item.productCost} ₽</h4>
+                      <p>{item.productInfo}</p>
+                    </div>
+                    <div className="d-flex align-items-center ">
+                      <button
+                        type="button"
+                        className="sign-out d-flex myLightBlue border-0 rounded-3 justify-content-center align-items-center  p-2 text-white w-100"
+                        onClick={(e) => navigation(`/product/${item.id}`)}
+                      >
+                        <span>Подробнее</span>
+                      </button>
+
+                      <form action="" className="m-0 p-0 d-inline-block lh-1">
+                        <button
+                          type="button"
+                          className="border-0 bg-transparent p-0 "
+                        >
+                          <img src="img/greyHear.png" alt="" className="like" />
+                          {/* <!-- если активна --> */}
+                          {/* <!--<img src="img/redHear.png" alt="" className="like"> --> */}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <p className="text-center">Товаров нет</p>
+          )}
+
           {/* <!-- заполнители-карточки --> */}
           <div className="col d-flex">
             <div className="rounded shadow p-3 w-100">

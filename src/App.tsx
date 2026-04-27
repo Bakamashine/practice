@@ -1,4 +1,3 @@
-import type { ComponentType } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -17,49 +16,57 @@ import ProductShow from "./views/products/show";
 import BuyPage from "./views/products/buy_page";
 import EditProduct from "./views/products/edit";
 import { AuthContext } from "./context/AuthContext";
-import { useAuth } from "./hooks/useAuth";
 import LoginView from "./views/auth/login";
 import RegisterView from "./views/auth/register";
+import NotFound from "./views/notFound";
 import React from "react";
-import { useUser } from "./hooks/useUser";
+import { useAuthProvider } from "./hooks/useAuthProvider";
 
 const GuestRoute: React.FC = () => {
-  const { user } = useUser();
+  const { user } = useAuthProvider();
   if (!user) {
     return <Outlet />;
   }
-  return <Navigate to={"/login"} state={{ from: window.location }} replace />;
+  return <Navigate to="/" replace />;
 };
 
 const PrivateRoute: React.FC = () => {
-  const { user } = useUser();
+  const { user } = useAuthProvider();
   if (user) {
     return <Outlet />;
   }
-  return <Navigate to={"/"} replace />;
+  return <Navigate to="/login" replace />;
+};
+
+const AppContent: React.FC = () => {
+  const { user, setUser } = useAuthProvider();
+
+  return (
+    <AuthContext.Provider value={{ user, setUser }}>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/comments" element={<CommentsView />} />
+          <Route path="/profile" element={<ProfileView />} />
+          <Route path="/like" element={<LiveView />} />
+          <Route path="/product/:id" element={<ProductShow />} />
+          <Route path="/buy_page" element={<BuyPage />} />
+          <Route path="/edit_product" element={<EditProduct />} />
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<LoginView />} />
+            <Route path="/register" element={<RegisterView />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </AuthContext.Provider>
+  );
 };
 
 const App: React.FC = () => {
-  const { user, login, logout, setUser } = useAuth();
   return (
     <BrowserRouter>
-      <AuthContext.Provider value={{ user, setUser }}>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<MainPage />} />
-            <Route path="/comments" element={<CommentsView />} />
-            <Route path="/profile" element={<ProfileView />} />
-            <Route path="/like" element={<LiveView />} />
-            <Route path="/show" element={<ProductShow />} />
-            <Route path="/buy_page" element={<BuyPage />} />
-            <Route path="/edit_product" element={<EditProduct />} />
-            <Route element={<GuestRoute />}>
-              <Route path="/login" element={<LoginView />} />
-              <Route path="/register" element={<RegisterView />} />
-            </Route>
-          </Route>
-        </Routes>
-      </AuthContext.Provider>
+      <AppContent />
     </BrowserRouter>
   );
 };

@@ -1,29 +1,25 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useLocalStorage } from "./useLocalStorage";
 
 export interface User {
   id: string;
   name: string;
-//   email: string;
-    phoneNumber: string;
+  phoneNumber: string;
   authToken?: string;
   role: string;
 }
 
 export const useUser = () => {
-  const { user, setUser } = useContext(AuthContext);
-  const { setItem } = useLocalStorage();
+  const context = useContext(AuthContext);
 
-  const addUser = (user: User) => {
-    setUser(user);
-    setItem("user", JSON.stringify(user));
+  if (!context) {
+    throw new Error("useUser must be used within AuthContext.Provider");
+  }
+
+  return {
+    user: context.user,
+    setUser: context.setUser,
+    addUser: context.setUser,
+    removeUser: () => context.setUser(null),
   };
-
-  const removeUser = () => {
-    setUser(null);
-    setItem("user", "");
-  };
-
-  return { user, addUser, removeUser, setUser };
 };

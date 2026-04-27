@@ -353,3 +353,9 @@ a {
 .object-fit {
   object-fit: 1;
 }
+
+.header__button__text {
+  color: white;
+  text-decoration: none;
+  bottom: none;
+}
