@@ -12,7 +12,7 @@ export default function LoginView() {
   const { setUser } = useAuthProvider();
   const navigate = useNavigate();
 
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const result = await auth.login({
       phoneNumber: phone,
