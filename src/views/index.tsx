@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import product, { ProductResponse, ProductResponseAny } from "../api/product";
 import Loader, { LoaderOverlay } from "../components/Loader";
 import default_image_url from "../constants/image";
+import { Helmet } from "react-helmet-async";
 
 export function MainPage() {
   const [myproduct, setProduct] = useState<ProductResponseAny>();
@@ -30,6 +31,10 @@ export function MainPage() {
   }
   return (
     //   <!-- каталог -->
+    <>
+    <Helmet>
+      <title>Неглавная страница</title>
+    </Helmet>
     <div className="catalog content">
       <section className="m-5 catalog ">
         <h1>Услуги и товары</h1>
@@ -119,5 +124,6 @@ export function MainPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }
